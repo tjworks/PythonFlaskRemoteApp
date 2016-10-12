@@ -5,22 +5,16 @@ from fabric.api import *
 
 application = Flask(__name__)
 
-client = MongoClient('localhost:27017')
-db = client.MachineData
+client = MongoClient('mongodb:27017')
+db = client.mydb
 
 @application.route("/addMachine",methods=['POST'])
 def addMachine():
     try:
         json_data = request.json['info']
-        deviceName = json_data['device']
-        ipAddress = json_data['ip']
-        userName = json_data['username']
-        password = json_data['password']
-        portNumber = json_data['port']
-
-        db.Machines.insert_one({
-            'device':deviceName,'ip':ipAddress,'username':userName,'password':password,'port':portNumber
-            })
+        # json_data:  { device: "", ip: "", username:"", password:"" }
+        db.Machines.insert(json_data);
+        
         return jsonify(status='OK',message='inserted successfully')
 
     except Exception,e:
@@ -58,7 +52,7 @@ def updateMachine():
         password = machineInfo['password']
         port = machineInfo['port']
 
-        db.Machines.update_one({'_id':ObjectId(machineId)},{'$set':{'device':device,'ip':ip,'username':username,'password':password,'port':port}})
+        db.Machines.update({'_id':ObjectId(machineId)},{'$set':{'device':device,'ip':ip,'username':username,'password':password,'port':port}})
         return jsonify(status='OK',message='updated successfully')
     except Exception, e:
         return jsonify(status='ERROR',message=str(e))
