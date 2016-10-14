@@ -6,14 +6,14 @@ from fabric.api import *
 application = Flask(__name__)
 
 client = MongoClient('mongodb:27017')
-db = client.mydb
+db = client.mydb1
 
-@application.route("/addMachine",methods=['POST'])
-def addMachine():
+@application.route("/addCustomer",methods=['POST'])
+def addCustomer():
     try:
         json_data = request.json['info']
         # json_data:  { device: "", ip: "", username:"", password:"" }
-        db.Machines.insert(json_data);
+        db.customers.insert(json_data);
         
         return jsonify(status='OK',message='inserted successfully')
 
@@ -21,72 +21,74 @@ def addMachine():
         return jsonify(status='ERROR',message=str(e))
 
 @application.route('/')
-def showMachineList():
+def showCustomerList():
     return render_template('list.html')
 
-@application.route('/getMachine',methods=['POST'])
-def getMachine():
+@application.route('/getCustomer',methods=['POST'])
+def getCustomer():
     try:
-        machineId = request.json['id']
-        machine = db.Machines.find_one({'_id':ObjectId(machineId)})
-        machineDetail = {
-                'device':machine['device'],
-                'ip':machine['ip'],
-                'username':machine['username'],
-                'password':machine['password'],
-                'port':machine['port'],
-                'id':str(machine['_id'])
+        CustomerId = request.json['id']
+        Customer = db.customers.find_one({'_id':ObjectId(CustomerId)})
+        CustomerDetail = {
+                'device':Customer['device'],
+                'ip':Customer['ip'],
+                'username':Customer['username'],
+                'password':Customer['password'],
+                'port':Customer['port'],
+                'id':str(Customer['_id'])
                 }
-        return json.dumps(machineDetail)
+        print CustomerDetail
+        return json.dumps(CustomerDetail)
     except Exception, e:
         return str(e)
 
-@application.route('/updateMachine',methods=['POST'])
-def updateMachine():
+@application.route('/updateCustomer',methods=['POST'])
+def updateCustomer():
     try:
-        machineInfo = request.json['info']
-        machineId = machineInfo['id']
-        device = machineInfo['device']
-        ip = machineInfo['ip']
-        username = machineInfo['username']
-        password = machineInfo['password']
-        port = machineInfo['port']
+        CustomerInfo = request.json['info']
+        CustomerId = CustomerInfo['id']
+        device = CustomerInfo['device']
+        ip = CustomerInfo['ip']
+        username = CustomerInfo['username']
+        password = CustomerInfo['password']
+        port = CustomerInfo['port']
 
-        db.Machines.update({'_id':ObjectId(machineId)},{'$set':{'device':device,'ip':ip,'username':username,'password':password,'port':port}})
+        db.customers.update({'_id':ObjectId(CustomerId)},{'$set':{'device':device,'ip':ip,'username':username,'password':password,'port':port}})
         return jsonify(status='OK',message='updated successfully')
     except Exception, e:
         return jsonify(status='ERROR',message=str(e))
 
-@application.route("/getMachineList",methods=['POST'])
-def getMachineList():
+@application.route("/getCustomerList",methods=['POST'])
+def getCustomerList():
     try:
-        machines = db.Machines.find()
+        customers = db.customers.find()
         
-        machineList = []
-        for machine in machines:
-            print machine
-            machineItem = {
-                    'device':machine['device'],
-                    'ip':machine['ip'],
-                    'username':machine['username'],
-                    'password':machine['password'],
-                    'port':machine['port'],
-                    'id': str(machine['_id'])
+        CustomerList = []
+        for Customer in customers:
+            print Customer
+            print "#######"
+            CustomerItem = {
+                    'device':Customer['device'],
+                    'ip':Customer['ip'],
+                    'username':Customer['username'],
+                    'password':Customer['password'],
+                    'port':Customer['port'],
+                    'id': str(Customer['_id'])
                     }
-            machineList.append(machineItem)
+            CustomerList.append(CustomerItem)
     except Exception,e:
         return str(e)
-    return json.dumps(machineList)
+    return json.dumps(CustomerList)
 
 @application.route("/execute",methods=['POST'])
 def execute():
     try:
-        machineInfo = request.json['info']
-        ip = machineInfo['ip']
-        username = machineInfo['username']
-        password = machineInfo['password']
-        command = machineInfo['command']
-        isRoot = machineInfo['isRoot']
+        CustomerInfo = request.json['info']
+        ip = CustomerInfo['ip']
+        username = CustomerInfo['username']
+        password = CustomerInfo['password']
+        command = CustomerInfo['command']
+        isRoot = CustomerInfo['isRoot']
         
         env.host_string = username + '@' + ip
         env.password = password
@@ -102,11 +104,11 @@ def execute():
         print 'Error is ' + str(e)
         return jsonify(status='ERROR',message=str(e))
 
-@application.route("/deleteMachine",methods=['POST'])
-def deleteMachine():
+@application.route("/deleteCustomer",methods=['POST'])
+def deleteCustomer():
     try:
-        machineId = request.json['id']
-        db.Machines.remove({'_id':ObjectId(machineId)})
+        CustomerId = request.json['id']
+        db.customers.remove({'_id':ObjectId(CustomerId)})
         return jsonify(status='OK',message='deletion successful')
     except Exception, e:
         return jsonify(status='ERROR',message=str(e))
