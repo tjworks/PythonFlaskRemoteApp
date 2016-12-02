@@ -2,6 +2,8 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from flask import Flask,render_template,jsonify,json,request
 from fabric.api import *
+from bson.json_util import dumps
+
 
 application = Flask(__name__)
 
@@ -12,8 +14,10 @@ db = client.mydb1
 def addCustomer():
     try:
         json_data = request.json['info']
-        # json_data:  { device: "", ip: "", username:"", password:"" }
+        
+        # json_data:  { name: "", address: "", email:"", phone:"" }
         db.customers.insert(json_data);        
+        
         return jsonify(status='OK',message='inserted successfully')
     except Exception,e:
         return jsonify(status='ERROR',message=str(e))
@@ -27,15 +31,8 @@ def getCustomer():
     try:
         CustomerId = request.json['customer_id']
         Customer = db.customers.find_one({'customer_id': CustomerId})
-        CustomerDetail = {
-                'customer_id':Customer['customer_id'],
-                'name':Customer['name'],
-                'phone':Customer['phone'],                
-                'address':Customer['address'],                
-                'email':Customer['email']                
-                }
-        print "*** ", CustomerDetail
-        return json.dumps(CustomerDetail)
+        #Customer = { 'customer_id':"xxx", name:xxx, phone:xxx, address:xxx}        
+        return dumps(Customer)
     except Exception, e:
         print(e)
         return str(e)
@@ -65,10 +62,7 @@ def getCustomerList():
         customers = db.customers.find();
 
         CustomerList = []
-        for Customer in customers:
-            print "####### !!!"
-            print Customer
-            
+        for Customer in customers:            
             CustomerItem = {
                     'customer_id':Customer['customer_id'],
                     'name':Customer['name'],
@@ -80,9 +74,7 @@ def getCustomerList():
     except Exception,e:
         print(e)
         return str(e)
-    print("=====1")
-    print json.dumps(CustomerList)
-    print("=====2")
+    
     return json.dumps(CustomerList)
 
 @application.route("/execute",methods=['POST'])
