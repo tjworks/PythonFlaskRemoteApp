@@ -13,10 +13,8 @@ def addCustomer():
     try:
         json_data = request.json['info']
         # json_data:  { device: "", ip: "", username:"", password:"" }
-        db.customers.insert(json_data);
-        
+        db.customers.insert(json_data);        
         return jsonify(status='OK',message='inserted successfully')
-
     except Exception,e:
         return jsonify(status='ERROR',message=str(e))
 
@@ -27,33 +25,36 @@ def showCustomerList():
 @application.route('/getCustomer',methods=['POST'])
 def getCustomer():
     try:
-        CustomerId = request.json['id']
-        Customer = db.customers.find_one({'_id':ObjectId(CustomerId)})
+        CustomerId = request.json['customer_id']
+        Customer = db.customers.find_one({'customer_id': CustomerId})
         CustomerDetail = {
-                'device':Customer['device'],
-                'ip':Customer['ip'],
-                'username':Customer['username'],
-                'password':Customer['password'],
-                'port':Customer['port'],
-                'id':str(Customer['_id'])
+                'customer_id':Customer['customer_id'],
+                'name':Customer['name'],
+                'phone':Customer['phone'],                
+                'address':Customer['address'],                
+                'email':Customer['email']                
                 }
-        print CustomerDetail
+        print "*** ", CustomerDetail
         return json.dumps(CustomerDetail)
     except Exception, e:
+        print(e)
         return str(e)
 
 @application.route('/updateCustomer',methods=['POST'])
 def updateCustomer():
     try:
         CustomerInfo = request.json['info']
-        CustomerId = CustomerInfo['id']
-        device = CustomerInfo['device']
-        ip = CustomerInfo['ip']
-        username = CustomerInfo['username']
-        password = CustomerInfo['password']
-        port = CustomerInfo['port']
-
-        db.customers.update({'_id':ObjectId(CustomerId)},{'$set':{'device':device,'ip':ip,'username':username,'password':password,'port':port}})
+        customer_id = CustomerInfo['customer_id']
+        name = CustomerInfo['name']
+        phone = CustomerInfo['phone']
+        address = CustomerInfo['address']
+        email = CustomerInfo['email']
+        
+        db.customers.update({'customer_id': customer_id},{'$set':{'customer_id':customer_id,
+            'name': name,
+            'phone': phone,
+            'address':address,
+            'email':email}})
         return jsonify(status='OK',message='updated successfully')
     except Exception, e:
         return jsonify(status='ERROR',message=str(e))
@@ -61,23 +62,27 @@ def updateCustomer():
 @application.route("/getCustomerList",methods=['POST'])
 def getCustomerList():
     try:
-        customers = db.customers.find()
-        
+        customers = db.customers.find();
+
         CustomerList = []
         for Customer in customers:
+            print "####### !!!"
             print Customer
-            print "#######"
+            
             CustomerItem = {
-                    'device':Customer['device'],
-                    'ip':Customer['ip'],
-                    'username':Customer['username'],
-                    'password':Customer['password'],
-                    'port':Customer['port'],
-                    'id': str(Customer['_id'])
+                    'customer_id':Customer['customer_id'],
+                    'name':Customer['name'],
+                    'phone':Customer['phone'],
+                    'address':Customer['address'],
+                    'email':Customer['email']                    
                     }
             CustomerList.append(CustomerItem)
     except Exception,e:
+        print(e)
         return str(e)
+    print("=====1")
+    print json.dumps(CustomerList)
+    print("=====2")
     return json.dumps(CustomerList)
 
 @application.route("/execute",methods=['POST'])
@@ -107,8 +112,8 @@ def execute():
 @application.route("/deleteCustomer",methods=['POST'])
 def deleteCustomer():
     try:
-        CustomerId = request.json['id']
-        db.customers.remove({'_id':ObjectId(CustomerId)})
+        CustomerId = request.json['customer_id']
+        db.customers.remove({'customer_id': CustomerId })
         return jsonify(status='OK',message='deletion successful')
     except Exception, e:
         return jsonify(status='ERROR',message=str(e))

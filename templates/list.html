@@ -61,14 +61,14 @@
 				}
 				
 				$scope.editCustomer = function(id){
-					$scope.info.id = id;
+					$scope.info.customer_id = id;
 					
 					$scope.showAdd = false;
 					
 					$http({
 						method: 'POST',
 						url: '/getCustomer',
-						data: {id:$scope.info.id}
+						data: {customer_id:$scope.info.customer_id}
 					}).then(function(response) {
 						console.log(response);
 						$scope.info = response.data;
@@ -102,7 +102,7 @@
 				
 				$scope.showRunPopUp = function(id){
 				
-					$scope.info.id = id;
+					$scope.info.customer_id = id;
 					$scope.run = {};
 					
 					
@@ -111,7 +111,7 @@
 					$http({
 						method: 'POST',
 						url: '/getCustomer',
-						data: {id:$scope.info.id}
+						data: {customer_id:$scope.info.customer_id}
 					}).then(function(response) {
 						console.log(response);
 						$scope.run = response.data;
@@ -135,7 +135,7 @@
 					$http({
 						method: 'POST',
 						url: '/deleteCustomer',
-						data: {id:$scope.deleteCustomerId}
+						data: {customer_id:$scope.deleteCustomerId}
 					}).then(function(response) {
 						console.log(response.data);
 						$scope.deleteCustomerId = '';
@@ -190,11 +190,11 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Device Name</th>
-                            <th>IP Address</th>
-                            <th>Username</th>
-                            <th>Password</th>
-                            <th>Port</th>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Phone Number</th>
+                            <th>Address</th>
+                            <th>Email</th>
 							<th></th>
 							<th></th>
 							<th></th>
@@ -203,14 +203,14 @@
                     <tbody>
                         <tr ng-repeat="Customer in Customers track by $index">
                             <th scope="row">{{'{{$index+1}}'}}</th>
-                            <td>{{ '{{Customer.device}}' }}</td>
-                            <td>{{ '{{Customer.ip}}' }}</td>
-                            <td> {{'{{Customer.username}}'}}</td>
-                            <td>{{'{{Customer.password}}'}}</td>
-                            <td>{{'{{Customer.port}}'}}</td>
-							<td><span style="cursor:pointer;" ng-click="editCustomer(Customer.id)" class="glyphicon glyphicon-pencil" aria-hidden="true"></span></td>
-							<td><span style="cursor:pointer;color:#e43309;" ng-click="confirmDelete(Customer.id)" class="glyphicon glyphicon-remove" aria-hidden="true"></span></td>
-							<td><span style="cursor:pointer;color:#3c763d;" ng-click="showRunPopUp(Customer.id)" class="glyphicon glyphicon-play" aria-hidden="true"></span></td>
+                            <td>{{ '{{Customer.customer_id}}' }}</td>
+                            <td>{{ '{{Customer.name}}' }}</td>
+                            <td> {{'{{Customer.phone}}'}}</td>
+                            <td>{{'{{Customer.address}}'}}</td>
+                            <td>{{'{{Customer.email}}'}}</td>
+							<td><span style="cursor:pointer;" ng-click="editCustomer(Customer.customer_id)" class="glyphicon glyphicon-pencil" aria-hidden="true"></span></td>
+							<td><span style="cursor:pointer;color:#e43309;" ng-click="confirmDelete(Customer.customer_id)" class="glyphicon glyphicon-remove" aria-hidden="true"></span></td>
+							<td><span style="cursor:pointer;color:#3c763d;" ng-click="showRunPopUp(Customer.customer_id)" class="glyphicon glyphicon-play" aria-hidden="true"></span></td>
                         </tr>
                        
                     </tbody>
@@ -225,29 +225,29 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="exampleModalLabel" >Add Customer info</h4>
+                    <h4 class="modal-title" id="exampleModalLabel" >Add Entry</h4>
                 </div>
                 <div class="modal-body">
                     <form>
                         <div class="form-group">
-                            <label for="txtDevice" class="control-label">Device Name:</label>
-                            <input type="text" class="form-control" ng-model="info.device" id="txtDevice">
+                            <label for="txtDevice" class="control-label">ID</label>
+                            <input type="text" class="form-control" ng-model="info.customer_id" id="txtDevice">
                         </div>
                         <div class="form-group">
-                            <label for="txtIP" class="control-label">IP Address:</label>
-                            <input type="text" class="form-control" ng-model="info.ip" id="txtIP">
+                            <label for="txtIP" class="control-label">Name:</label>
+                            <input type="text" class="form-control" ng-model="info.name" id="txtIP">
                         </div>
                         <div class="form-group">
-                            <label for="txtUsername" class="control-label">Username:</label>
-                            <input type="text" class="form-control" ng-model="info.username" id="txtUsername">
+                            <label for="txtUsername" class="control-label">Phone Number:</label>
+                            <input type="text" class="form-control" ng-model="info.phone" id="txtUsername">
                         </div>
                         <div class="form-group">
-                            <label for="txtPassword" class="control-label">Password:</label>
-                            <input type="text" class="form-control" ng-model="info.password" id="txtPassword">
+                            <label for="txtPassword" class="control-label">Address:</label>
+                            <input type="text" class="form-control" ng-model="info.address" id="txtPassword">
                         </div>
                         <div class="form-group">
-                            <label for="txtPort" class="control-label">Port:</label>
-                            <input type="text" class="form-control" ng-model="info.port" id="txtPort">
+                            <label for="txtPort" class="control-label">Email:</label>
+                            <input type="text" class="form-control" ng-model="info.email" id="txtPort">
                         </div>
                     </form>
                 </div>
